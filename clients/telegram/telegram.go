@@ -11,7 +11,7 @@ import (
 	"github.com/Vinsektor/saved_reminder_bot/lib/e"
 )
 
-type tgClient struct {
+type TgClient struct {
 	host     string
 	basePath string
 	client   http.Client
@@ -22,15 +22,15 @@ const (
 	sendMessageMethod = "sendMessage"
 )
 
-func New(host string, token string) tgClient {
-	return tgClient{
+func New(host string, token string) TgClient {
+	return TgClient{
 		host:     host,
 		basePath: newBasePath(token),
 		client:   http.Client{},
 	}
 }
 
-func (c *tgClient) Updates(offset int, limit int) ([]Update, error) {
+func (c *TgClient) Updates(offset int, limit int) ([]Update, error) {
 	q := url.Values{}
 	q.Add("offset", strconv.Itoa(offset))
 	q.Add("limit", strconv.Itoa(limit))
@@ -48,7 +48,7 @@ func (c *tgClient) Updates(offset int, limit int) ([]Update, error) {
 	return res.Result, nil
 }
 
-func (c *tgClient) SendMessage(chatID int, text string) error {
+func (c *TgClient) SendMessage(chatID int, text string) error {
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("text", text)
@@ -65,7 +65,7 @@ func newBasePath(token string) string {
 	return "bot" + token
 }
 
-func (c *tgClient) doRequest(method string, query url.Values) (data []byte, err error) {
+func (c *TgClient) doRequest(method string, query url.Values) (data []byte, err error) {
 	defer func() {
 		err = e.WrapIfErr("can't do request", err)
 	}()
