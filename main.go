@@ -4,27 +4,37 @@ import (
 	"flag"
 	"log"
 
-	"github.com/Vinsektor/saved_reminder_bot/clients/telegram"
+	tgClient "github.com/Vinsektor/saved_reminder_bot/clients/telegram"
+	event_consumer "github.com/Vinsektor/saved_reminder_bot/consumer/event-consumer"
+	"github.com/Vinsektor/saved_reminder_bot/events/telegram"
+	"github.com/Vinsektor/saved_reminder_bot/storage/files"
 )
 
 const (
-	tgBotHost = "api.telegram.org"
+	tgBotHost   = "api.telegram.org"
+	storagePath = "files_storage"
+	batchSize   = 100
 )
 
 func main() {
-	tgClient := telegram.New(tgBotHost, mustToken())
+	eventProcessor := telegram.New(
+		tgClient.New(tgBotHost, mustToken()),
+		files.New(storagePath),
+	)
 
-	// fetcher = fetcher.Ner(tgClient)
+	log.Printf("service started")
 
-	// processor = processor.New(tgClient)
+	consumer := event_consumer.New(eventProcessor, eventProcessor, batchSize)
 
-	//consumer.Start(fetcher, processor)
+	if err := consumer.Start(); err != nil {
+		log.Fatal("service is stopped", err)
+	}
 
 }
 
 func mustToken() string {
 	token := flag.String(
-		"token-bot-token",
+		"tg-bot-token",
 		"",
 		"token for access to telegram bot")
 

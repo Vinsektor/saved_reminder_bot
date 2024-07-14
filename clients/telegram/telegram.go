@@ -22,8 +22,8 @@ const (
 	sendMessageMethod = "sendMessage"
 )
 
-func New(host string, token string) TgClient {
-	return TgClient{
+func New(host string, token string) *TgClient {
+	return &TgClient{
 		host:     host,
 		basePath: newBasePath(token),
 		client:   http.Client{},
